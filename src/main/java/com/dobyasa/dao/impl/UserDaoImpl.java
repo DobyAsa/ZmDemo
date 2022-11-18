@@ -1,106 +1,86 @@
 package com.dobyasa.dao.impl;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
-import java.util.List;
-
+import com.dobyasa.Utils.DBCPUtil;
 import com.dobyasa.dao.UserDao;
 import com.dobyasa.entity.Users;
 import com.dobyasa.exception.IdIsNullException;
+import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanHandler;
+
+import javax.sql.DataSource;
+import java.util.List;
 
 public class UserDaoImpl implements UserDao {
+    @Override
+    public boolean addUser(Users users) {
+        try{
+            if (selectUser(users) != null){
+                return false;
+            }else {
+                DataSource dataSource = DBCPUtil.getDataSource();
+                QueryRunner queryRunner = new QueryRunner(dataSource);
 
-	@Override
-	public int addUser(Users users) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+                queryRunner.update("insert into users (name, pwd) values(?,?)", users.getName(), users.getPwd());
+                return true;
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+            return false;
+        }
+    }
 
-	@Override
-	public int delUserById(Integer id) throws IdIsNullException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    public Users selectUser(Users users){
+        try {
+            DataSource dataSource = DBCPUtil.getDataSource();
+            QueryRunner queryRunner = new QueryRunner(dataSource);
 
-	@Override
-	public int delUserByName(String name) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+            return queryRunner.query("select * from users where name=?", new BeanHandler<>(Users.class), users.getName());
+        }catch (Exception e){
+            e.printStackTrace();
+            return null;
+        }
+    }
 
-	@Override
-	public int updateUserById(Integer id) throws IdIsNullException {
-		// TODO Auto-generated method stub
-		return 0;
-	}
+    @Override
+    public int delUserById(Integer id) throws IdIsNullException {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	@Override
-	public List<Users> getAllUsers() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public int delUserByName(String name) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 
-	@Override
-	public boolean checkUser(Users users) {
-		
-		boolean flag=true;
-		
-		String name = users.getName();
-		String pwd = users.getPwd();
-		Connection conn=null;
-		Statement stmt=null;
-		ResultSet rs=null;
-		
-		try {
-			Class.forName("org.mariadb.jdbc.Driver");
-			conn=DriverManager.getConnection("jdbc:mariadb://localhost:3306/test", "root", "Hjj20021022");
-			stmt=conn.createStatement();
-			String sql="select * from users where name='"+name+"' and pwd='"+pwd+"'";
-			rs=stmt.executeQuery(sql);
-			
-			// 封装Users
-			if(rs.next()){
-				flag=true;
-			}else{
-				flag=false;
-			}
-			
-//		Users users =new Users();
-//		users.setId(rs.getInt("id"));
-//		users.setName(rs.getString("name"));
-//		users.setNickName(rs.getString("nickName"));
-//		users.setPwd(rs.getString("pwd"));
-//		users.setGender(rs.getString("gender"));
-//		users.setBirthday(rs.getDate("birthday"));
-//		users.setHobby(rs.getString("hobby"));
-//		users.setTel(rs.getString("tel"));
-//		users.setEmail(rs.getString("email"));
-//		users.setGrade(rs.getInt("grade"));
-//		users.setDescription(rs.getString("description"));
-			
-//		System.out.println(users);
-			
-			// 6、关闭资源
-			if(rs!=null){
-				rs.close();
-				rs=null;	//垃圾回收，上！
-			}
-			if(stmt!=null){
-				stmt.close();
-				stmt=null;	//垃圾回收，上！
-			}
-			if(conn!=null){
-				conn.close();
-				conn=null;	//垃圾回收，上！
-			}
-			
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		
-		return flag;
-	}
+    @Override
+    public int updateUserById(Integer id) throws IdIsNullException {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
+    @Override
+    public List<Users> getAllUsers() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean checkUser(Users users) {
+
+        try {
+            DataSource dataSource = DBCPUtil.getDataSource();
+            QueryRunner queryRunner = new QueryRunner(dataSource);
+            Users u = queryRunner.query("select * from users where name = ? and pwd = ?",
+                    new BeanHandler<>(Users.class), users.getName(), users.getPwd());
+            if(u == null){
+                return false;
+            }
+            return true;
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 
 }

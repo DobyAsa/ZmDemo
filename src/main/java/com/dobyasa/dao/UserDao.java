@@ -13,7 +13,10 @@ public interface UserDao {
 	 * @param users
 	 * @return
 	 */
-	public int addUser(Users users);
+	public boolean addUser(Users users);
+
+
+	public Users selectUser(Users users);
 	
 	/**
 	 * 根据id删除单个用户

@@ -5,16 +5,25 @@ import com.dobyasa.service.UserService;
 import com.dobyasa.service.impl.UserServiceImpl;
 import org.testng.annotations.Test;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.fail;
+import java.util.Base64;
+
+import static org.testng.AssertJUnit.*;
 
 public class UserServiceImplTest {
 	
-	private UserService service = new UserServiceImpl();
+	private final UserService service = new UserServiceImpl();
 
 	@Test
 	public void testAddUser() {
-		fail("Not yet implemented");
+		Users users =new Users();
+
+		users.setName("李逵");
+		users.setPwd(Base64.getEncoder().encodeToString("123".getBytes()));
+
+		boolean flag= service.addUser(users);
+
+		// 断言
+		assertTrue(flag);
 	}
 
 	@Test
@@ -39,16 +48,16 @@ public class UserServiceImplTest {
 
 	@Test
 	public void testCheckUser() {
-		
+
 		Users users =new Users();
-		
+
 		users.setName("李逵");
-		users.setPwd("123");
-		
-		boolean flag=service.checkUser(users);
-		
+		users.setPwd(Base64.getEncoder().encodeToString("123".getBytes()));
+
+		boolean flag= service.checkUser(users);
+
 		// 断言
-		assertEquals(flag, true);
+		assertTrue(flag);
 		
 	}
 

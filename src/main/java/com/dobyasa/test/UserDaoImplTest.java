@@ -6,17 +6,26 @@ import com.dobyasa.dao.impl.UserDaoImpl;
 import com.dobyasa.entity.Users;
 import org.testng.annotations.Test;
 
-import static org.testng.AssertJUnit.assertEquals;
-import static org.testng.AssertJUnit.fail;
+import java.util.Base64;
+
+import static org.testng.AssertJUnit.*;
 
 
 public class UserDaoImplTest {
 	
-	private UserDao userDao = new UserDaoImpl();	// 依赖注入
+	private final UserDao userDao = new UserDaoImpl();	// 依赖注入
 
 	@Test
 	public void testAddUser() {
-		fail("Not yet implemented");
+		Users users =new Users();
+
+		users.setName("李逵");
+		users.setPwd(Base64.getEncoder().encodeToString("123".getBytes()));
+
+		boolean flag=userDao.addUser(users);
+
+		// 断言
+		assertTrue(flag);
 	}
 
 	@Test
@@ -45,12 +54,12 @@ public class UserDaoImplTest {
 		Users users =new Users();
 		
 		users.setName("李逵");
-		users.setPwd("123");
+		users.setPwd(Base64.getEncoder().encodeToString("123".getBytes()));
 		
 		boolean flag=userDao.checkUser(users);
 		
 		// 断言
-		assertEquals(flag, true);
+		assertTrue(flag);
 		
 	}
 
